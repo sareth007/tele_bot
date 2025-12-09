@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org">
+
+<head th:replace="~{base :: head}">
+
+</head>
+
+<style>
+/* Rustic Paper Note Style */
+.rustic-bg {
+    background: #e8dcc8;
+    padding: 4rem 0;
+    position: relative;
+}
+
+.paper-note {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fefdfb;
+    padding: 0;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(61, 39, 35, 0.2), 0 0 0 1px rgba(139, 69, 19, 0.1);
+    opacity: 0;
+    transform: rotate(-1deg) translateY(20px);
+    animation: noteDrop 0.8s ease-out 0.2s forwards;
+}
+
+/* Paper texture overlay */
+.paper-note::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.02) 2px, rgba(139, 69, 19, 0.02) 4px);
+    pointer-events: none;
+}
+
+/* Coffee cup ring stain */
+.coffee-stain {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    border: 2px solid rgba(139, 69, 19, 0.15);
+    border-radius: 50%;
+    box-shadow: inset 0 0 10px rgba(139, 69, 19, 0.1);
+    opacity: 0;
+    animation: stainAppear 0.8s ease-out 1s forwards;
+}
+
+.coffee-stain::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(139, 69, 19, 0.1);
+    border-radius: 50%;
+}
+
+.note-clip {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(to bottom, #8B4513, #6d3710);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.note-header {
+    padding: 2.5rem 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 2px solid #3e2723;
+    margin: 0 1.5rem;
+}
+
+.checkmark-box {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #8B4513;
+    border-radius: 8px;
+    background: #fff;
+    position: relative;
+    margin-bottom: 1rem;
+    animation: boxShake 0.5s ease-out 0.6s both;
+}
+
+.checkmark-box::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 2rem;
+    color: #8B4513;
+    font-weight: 700;
+    animation: checkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.8s forwards;
+}
+
+.note-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.4rem;
+    color: #3e2723;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.note-message {
+    font-family: 'Georgia', serif;
+    color: #5d4037;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.note-body {
+    padding: 2rem 1.5rem;
+}
+
+.detail-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.65rem 0.5rem;
+    margin-bottom: 0.5rem;
+    background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px);
+    border-left: 3px solid #D4A574;
+    opacity: 0;
+    animation: detailFade 0.5s ease-out forwards;
+}
+
+.detail-line:nth-child(1) { animation-delay: 1s; }
+.detail-line:nth-child(2) { animation-delay: 1.1s; }
+.detail-line:nth-child(3) { animation-delay: 1.2s; }
+.detail-line:nth-child(4) { animation-delay: 1.3s; }
+.detail-line:nth-child(5) { animation-delay: 1.4s; }
+
+.detail-line:hover {
+    background: rgba(212, 165, 116, 0.1);
+    border-left-width: 5px;
+    transition: all 0.3s ease;
+}
+
+.detail-key {
+    font-weight: 700;
+    color: #5d4037;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.detail-val {
+    color: #3e2723;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.note-footer {
+    padding: 1.5rem;
+    text-align: center;
+    border-top: 2px dashed #D4A574;
+    margin: 0 1.5rem;
+}
+
+.btn-rustic {
+    background: #8B4513;
+    color: #fefdfb;
+    padding: 0.65rem 2rem;
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 3px 8px rgba(139, 69, 19, 0.3);
+}
+
+.btn-rustic:hover {
+    background: #3e2723;
+    color: #D4A574;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(139, 69, 19, 0.4);
+}
+
+@keyframes noteDrop {
+    to {
+        opacity: 1;
+        transform: rotate(0deg) translateY(0);
+    }
+}
+
+@keyframes boxShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+@keyframes checkPop {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes detailFade {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes stainAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+
+<body>
+	<!-- __Navbar__ Start -->
+	<div th:replace="~{base :: base}"></div>
+	<!-- __Navbar__ End -->
+
+	<!-- Page Header Start -->
+	<div th:replace="~{base :: header(text='Booked Success')}"></div>
+	<!-- Page Header End -->
+
+	<!-- Success Start -->
+	<div class="rustic-bg">
+		<div class="container d-flex justify-content-center">
+			<div class="paper-note">
+				
+				<!-- Paper clip -->
+				<div class="note-clip"></div>
+				
+				<!-- Coffee stain -->
+				<div class="coffee-stain"></div>
+
+				<!-- Header -->
+				<div class="note-header">
+					<div class="checkmark-box"></div>
+					<h3 class="note-title">Booked</h3>
+					<p class="note-message">
+						Thank you!, <span th:text="${booked.name}"></span>
+					</p>
+				</div>
+
+				<!-- Body -->
+				<div class="note-body">
+				
+					<div class="detail-line">
+						<span class="detail-key">Name :</span>
+						<span class="detail-val" th:text="${booked.name}"></span>
+					</div>
+					
+					<div class="detail-line">
+						<span class="detail-key">Phone :</span>
+						<span class="detail-val" th:text="${booked.phoneNumber}"></span>
+					</div>
+
+					<div class="detail-line">
+						<span class="detail-key">Email :</span>
+						<span class="detail-val" th:text="${booked.email}"></span>
+					</div>
+
+					<div class="detail-line">
+						<span class="detail-key">Date :</span>
+						<span class="detail-val" th:text="${booked.date}"></span>
+					</div>
+
+					<div class="detail-line">
+						<span class="detail-key">Time :</span>
+						<span class="detail-val" th:text="${booked.time}"></span>
+					</div>
+
+					<div class="detail-line">
+						<span class="detail-key">Person :</span>
+						<span class="detail-val" th:text="${booked.person}"></span>
+					</div>
+
+				</div>
+
+				<!-- Footer -->
+				<div class="note-footer">
+					<a href="/" class="btn-rustic">Back to Home</a>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- Success End -->
+
+	<!-- Footer Start -->
+	<div th:replace="~{base :: footer}"></div>
+	<!-- Footer End -->
+	
+	<div th:replace="~{base :: script}"></div>
+</body>
+</html>

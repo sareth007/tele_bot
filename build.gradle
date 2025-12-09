@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.example'
+version = '1.0.0'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+            include '**/*'
+        }
+    }
+}
+
+// Make sure resources are processed
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+dependencies {
+
+    //  Spring Boot Core
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    //  Spring Boot Web (REST / Controllers)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //  Spring Data JPA (REQUIRED for @Entity, JpaRepository)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //  MySQL Driver (REQUIRED for database)
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //  Lombok (REQUIRED for getters/setters/constructors)
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
+    //  Telegram Bot API
+    implementation 'com.github.pengrad:java-telegram-bot-api:9.2.1'
+
+    //  JSON parser
+    implementation 'com.google.code.gson:gson:2.11.0'
+
+    //  Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    
+    //postgressql
+    implementation 'org.postgresql:postgresql:42.7.3'
+    
+    
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

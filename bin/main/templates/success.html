@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org">
+
+<head th:replace="~{base :: head}">
+
+</head>
+
+<body>
+    <!-- Navbar Start -->
+    
+    <div th:replace="~{base :: navbar}"></div>
+    
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    
+    <div th:replace="~{base :: header(text='Booked Success')}"></div>
+    
+    <!-- Page Header End -->
+
+
+    <!-- Success Start -->
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="section-title">
+                
+            </div>
+            <div class="row">
+                <div class="col-lg-4 py-0 py-lg-5">
+                    
+                </div>
+                <div class="col-lg-4 py-5 py-lg-0" style="min-height: 500px;">
+                    <div class="position-relative h-100">
+                        
+                    </div>
+                </div>
+                <div class="col-lg-4 py-0 py-lg-5">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
+
+
+    <!-- Footer Start -->
+    <div th:replace="~{base :: footer}"></div>
+    <!-- Footer End -->
+
+
+    <div th:replace="~{base :: script}"></div>
+</body>
+
+</html>
